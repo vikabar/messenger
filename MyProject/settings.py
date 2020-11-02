@@ -24,9 +24,10 @@ SECRET_KEY = 'd)r$9)7@6j#40*^ce^rnu9h)=5)p(hjo*@0s!2lzx^l9sb9(au'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+#DEBUG = True
 
 ALLOWED_HOSTS = ['infinite-mesa-62793.herokuapp.com']
-
+#ALLOWED_HOSTS = []
 
 # Application definition
 
