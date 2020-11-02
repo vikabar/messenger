@@ -121,26 +121,37 @@ class MessageList(APIView):
             if update_type is None:
                 return Response("Bad request", status=status.HTTP_400_BAD_REQUEST)
 
-
             if user == msg.receiver:
-                # the recepient deletes the message FROM HIS LOG
-                if update_type == "delete":
-                    msg.mark_deleted_by_receiver()
-                    dict = {"Status": self.status_dict["success"], "Message": ""}
-                    return Response(dict, status=status.HTTP_200_OK)
+                if not msg.is_deleted_by_receiver:
+                    # the recepient deletes the message FROM HIS LOG
+                    if update_type == "delete":
+                        msg.mark_deleted_by_receiver()
+                        dict = {"Status": self.status_dict["success"], "Message": ""}
+                        return Response(dict, status=status.HTTP_200_OK)
 
-                # the recepient marks message as read
-                elif update_type == "mark_read":
-                    msg.mark_read()
-                    dict = {"Status": self.status_dict["success"], "Message": ""}
+                    # the recepient marks message as read
+                    elif update_type == "mark_read":
+                        msg.mark_read()
+                        dict = {"Status": self.status_dict["success"], "Message": ""}
+                        return Response(dict, status=status.HTTP_200_OK)
+
+                    else:
+                        dict = {"Status": self.status_dict["error"], "Message": "Invalid request"}
+                        return Response(dict, status=status.HTTP_200_OK)
+                else:
+                    dict = {"Status": self.status_dict["error"], "Message": "Invalid request"}
                     return Response(dict, status=status.HTTP_200_OK)
 
             # the sender deletes message FROM HIS LOG
             elif user == msg.sender:
-                if update_type == "delete":
-                    msg.mark_deleted_by_sender()
-                    dict = {"Status": self.status_dict["success"], "Message": ""}
-                    return Response(dict, status=status.HTTP_200_OK)
+                if not msg.is_deleted_by_sender:
+                    if update_type == "delete":
+                        msg.mark_deleted_by_sender()
+                        dict = {"Status": self.status_dict["success"], "Message": ""}
+                        return Response(dict, status=status.HTTP_200_OK)
+                    else:
+                        dict = {"Status": self.status_dict["error"], "Message": "Invalid request"}
+                        return Response(dict, status=status.HTTP_200_OK)
                 else:
                     dict = {"Status": self.status_dict["error"], "Message": "Invalid request"}
                     return Response(dict, status=status.HTTP_200_OK)
