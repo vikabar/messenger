@@ -27,3 +27,5 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['-creation_date']
+
+

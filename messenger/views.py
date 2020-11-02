@@ -3,9 +3,11 @@ from messenger.serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+import json
 
 
 class MessageList(APIView):
+    status_dict = {"success": "succsess", "error": "error"}
 
     '''
     list of messages for logged-in user: unread(received)/sent/received/all. The response will contain only messages that were not deleted by the user
@@ -14,7 +16,6 @@ class MessageList(APIView):
     def get(self, request):
         try:
             user = request.user
-
             msg_id = request.GET.get('msg_id', None)
             #read received message
             if msg_id is not None:
@@ -22,7 +23,8 @@ class MessageList(APIView):
                     msg = Message.objects.get(pk=request.GET.get('msg_id'), receiver=user, is_deleted_by_receiver=False)
                     serializer = MessageSerializer(msg)
                     msg.mark_read()
-                    return Response(serializer.data, status=status.HTTP_200_OK)
+                    dict = {"status" : self.status_dict["success"], "data" : serializer.data}
+                    return Response(dict, status=status.HTTP_200_OK)
                 except:
                     return Response("Oooops, the message doesn't exist or you dont have permission to read it. Please check the id you've entered",
                                     status=status.HTTP_400_BAD_REQUEST)
